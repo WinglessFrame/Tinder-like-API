@@ -11,6 +11,6 @@ from GinderApp.models import Profile
 # Profile views
 class ProfileAPIView(RetrieveUpdateAPIView):
     authentication_classes = [SessionAuthentication, TokenAuthentication]
-    permission_classes = IsOwnerOrReadOnly
+    permission_classes = [IsOwnerOrReadOnly,]
     serializer_class = ProfileSerializer
     queryset = Profile.objects.all()

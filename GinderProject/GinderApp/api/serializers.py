@@ -8,15 +8,15 @@ class ProfileSerializer(ModelSerializer):
     lon = SerializerMethodField()
     lat = SerializerMethodField()
 
-    def get_lon(self):
-        if self.location:
-            return self.location.LON
+    def get_lon(self, obj):
+        if obj.location:
+            return obj.location.LON
         else:
             return "Not set"
 
-    def get_lat(self):
-        if self.location:
-            return self.location.LAT
+    def get_lat(self, obj):
+        if obj.location:
+            return obj.location.LAT
         else:
             return "Not set"
 
@@ -25,6 +25,5 @@ class ProfileSerializer(ModelSerializer):
         fields = [
             'bio',
             'lon',
-            'lat'
-            'subscription'
+            'lat',
         ]
