@@ -10,13 +10,13 @@ class ProfileSerializer(ModelSerializer):
 
     def get_lon(self, obj):
         if obj.location:
-            return obj.location.LON
+            return obj.location.x
         else:
             return "Not set"
 
     def get_lat(self, obj):
         if obj.location:
-            return obj.location.LAT
+            return obj.location.y
         else:
             return "Not set"
 

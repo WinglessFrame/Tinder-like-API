@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # Third-party apps
     'rest_framework',
+    'django.contrib.gis',
     # My apps
     'GinderApp',
     'accounts',
