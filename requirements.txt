@@ -1,0 +1,11 @@
+asgiref==3.3.1
+Django==3.1.6
+djangorestframework==3.12.2
+djangorestframework-simplejwt==4.6.0
+GDAL @ file:///C:/Users/TSO_new1/Downloads/GDAL-3.2.1-cp38-cp38-win_amd64.whl
+Pillow==8.1.0
+psycopg2==2.8.6
+psycopg2-binary==2.8.6
+PyJWT==2.0.1
+pytz==2021.1
+sqlparse==0.4.1
