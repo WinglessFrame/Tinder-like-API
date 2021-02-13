@@ -27,16 +27,18 @@ class ProfileSerializer(ModelSerializer):
         return obj.subscription
 
     def get_posts(self, obj):
-        serializer = PostSerializer(obj.user.posts, many=True)
+        serializer = PostSerializer(obj.user.posts, many=True, context=self.context)
         return serializer.data
 
     class Meta:
         model = Profile
         fields = [
             'bio',
+            'location',
             'lon',
             'lat',
             'subscription',
+            'posts'
         ]
 
 
@@ -45,7 +47,8 @@ class PostSerializer(ModelSerializer):
     user_profile_url = SerializerMethodField()
 
     def get_user_profile_url(self, obj):
-        return reverse()
+        request = self.context.get('request')
+        return reverse('GinderApp:profile', args=[obj.user.profile.pk, ], request=request)
 
     class Meta:
         model = Post

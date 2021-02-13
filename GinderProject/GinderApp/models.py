@@ -43,7 +43,8 @@ def save_user_profile(sender, instance, **kwargs):
 class Post(models.Model):
     image = models.ImageField(upload_to=upload_post_image, blank=False)
     description = models.TextField(max_length=200, blank=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, blank=False)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, blank=False, related_name='posts')
+    likes = models.ManyToManyField(User, related_name='likes', blank=True)
 
     def __str__(self):
         return self.user.username
