@@ -2,7 +2,10 @@
 __pycache__/
 *.py[cod]
 *$py.class
-
+# MEDIA ROOT
+posts/
+# .env file
+*.env
 # C extensions
 *.so
 # idea

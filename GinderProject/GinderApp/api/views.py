@@ -6,11 +6,13 @@ from rest_framework.response import Response
 from GinderApp.api.permissions import IsOwnerOrReadOnly
 from GinderApp.api.serializers import ProfileSerializer
 from GinderApp.models import Profile
+from GinderApp.api.throttling import SubscriptionRateThrottle
 
 
 # Profile views
 class ProfileAPIView(RetrieveUpdateAPIView):
     authentication_classes = [SessionAuthentication, TokenAuthentication]
-    permission_classes = IsOwnerOrReadOnly
+    permission_classes = [IsOwnerOrReadOnly,]
+    # throttle_classes = [SubscriptionRateThrottle,]
     serializer_class = ProfileSerializer
     queryset = Profile.objects.all()

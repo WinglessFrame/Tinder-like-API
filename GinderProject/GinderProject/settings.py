@@ -11,22 +11,26 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
 from pathlib import Path
+import os
+from dotenv import load_dotenv
+
+# Load .env file
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '4@a1((f54zgd22-!ihta88cd-r!cv9tk0vffmw!m5wf$yh)+j='
+# SECRET_KEY = '4@a1((f54zgd22-!ihta88cd-r!cv9tk0vffmw!m5wf$yh)+j='
+SECRET_KEY = os.environ.get("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
 
 # Application definition
 
@@ -39,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # Third-party apps
     'rest_framework',
+    'django.contrib.gis',
     # My apps
     'GinderApp',
     'accounts',
@@ -74,7 +79,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'GinderProject.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
@@ -82,13 +86,12 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': 'GinderDB',
-        'USER': 'postgres',
-        'PASSWORD': 'postgres',
+        'USER': os.environ.get("DB_USER"),
+        'PASSWORD': os.environ.get("DB_PASSWORD"),
         'HOST': 'localhost',
         'PORT': '5432',
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
@@ -117,6 +120,14 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticatedOrReadOnly',
     ),
+    'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.UserRateThrottle',
+        'GinderApp.api.throttling.SubscriptionRateThrottle'
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        'user': '5/second',
+        'subscription': '200/day'
+    }
 }
 
 # Internationalization
@@ -132,11 +143,10 @@ USE_L10N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
 
-MEDIA_ROOT = '/media/'
-MEDIA_URL = '/media/'
+MEDIA_ROOT = ''
+MEDIA_URL = ''
