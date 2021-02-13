@@ -20,6 +20,8 @@ class Profile(models.Model):
                                     choices=SUBSCRIPTION_CHOICES)
     bio = models.TextField(max_length=500, blank=True, null=True)
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile', blank=False)
+    likes = models.ManyToManyField(User, related_name='likes', blank=True)
+    viewed = models.ManyToManyField('Profile', related_name='viewed_by')
 
     def __str__(self):
         return self.user.username
@@ -44,7 +46,7 @@ class Post(models.Model):
     image = models.ImageField(upload_to=upload_post_image, blank=False)
     description = models.TextField(max_length=200, blank=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=False, related_name='posts')
-    likes = models.ManyToManyField(User, related_name='likes', blank=True)
+
 
     def __str__(self):
         return self.user.username
