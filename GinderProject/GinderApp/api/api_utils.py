@@ -8,3 +8,12 @@ def get_user_daily_limit(user):
         return 99999
     else:
         return False
+
+def is_match(user, post_author):
+    user.profile.likes.add(post_author.pk)
+    # if match:
+    if user in post_author.likes.all():
+        return True
+    # else
+    else:
+        return False

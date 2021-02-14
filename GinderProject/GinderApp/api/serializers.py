@@ -45,10 +45,15 @@ class ProfileSerializer(ModelSerializer):
 # Post serializers
 class PostSerializer(ModelSerializer):
     user_profile_url = SerializerMethodField()
+    like_url = SerializerMethodField()
 
     def get_user_profile_url(self, obj):
         request = self.context.get('request')
         return reverse('GinderApp:profile', args=[obj.user.profile.pk, ], request=request)
+
+    def get_like_url(self, obj):
+        request = self.context.get('request')
+        return reverse('GinderApp:like', args=[obj.user.profile.pk], request=request)
 
     class Meta:
         model = Post
@@ -56,4 +61,6 @@ class PostSerializer(ModelSerializer):
             'image',
             'description',
             'user_profile_url',
+            'like_url',
         ]
+
