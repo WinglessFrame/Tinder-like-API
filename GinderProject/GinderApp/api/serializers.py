@@ -11,6 +11,7 @@ class ProfileSerializer(ModelSerializer):
     lat = SerializerMethodField()
     subscription = SerializerMethodField()
     posts = SerializerMethodField()
+    matches = SerializerMethodField()
 
     def get_username(self, obj):
         return obj.user.username
@@ -34,6 +35,13 @@ class ProfileSerializer(ModelSerializer):
         serializer = PostSerializer(obj.user.posts, many=True, context=self.context)
         return serializer.data
 
+    def get_matches(self, obj):
+        request = self.context.get('request')
+        if obj.user.profile == obj:
+            return reverse('GinderApp:matches', request=request)
+        else:
+            return 'Forbidden'
+
     class Meta:
         model = Profile
         fields = [
@@ -43,6 +51,7 @@ class ProfileSerializer(ModelSerializer):
             'lon',
             'lat',
             'subscription',
+            'matches',
             'posts'
         ]
 
@@ -120,6 +129,7 @@ class ChatSerializer(ModelSerializer):
             'send_message_url',
             'messages',
         ]
+
 
 # List
 class ListMatchChatSerializer(ModelSerializer):
