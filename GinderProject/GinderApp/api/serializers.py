@@ -1,15 +1,19 @@
 from rest_framework.serializers import ModelSerializer, SerializerMethodField
 from rest_framework.reverse import reverse
 
-from GinderApp.models import Profile, Post
+from GinderApp.models import Profile, Post, MatchChat, Message
 
 
 # Profile serializers
 class ProfileSerializer(ModelSerializer):
+    username = SerializerMethodField()
     lon = SerializerMethodField()
     lat = SerializerMethodField()
     subscription = SerializerMethodField()
     posts = SerializerMethodField()
+
+    def get_username(self, obj):
+        return obj.user.username
 
     def get_lon(self, obj):
         if obj.location:
@@ -33,6 +37,7 @@ class ProfileSerializer(ModelSerializer):
     class Meta:
         model = Profile
         fields = [
+            'username',
             'bio',
             'location',
             'lon',
@@ -45,10 +50,15 @@ class ProfileSerializer(ModelSerializer):
 # Post serializers
 class PostSerializer(ModelSerializer):
     user_profile_url = SerializerMethodField()
+    like_url = SerializerMethodField()
 
     def get_user_profile_url(self, obj):
         request = self.context.get('request')
         return reverse('GinderApp:profile', args=[obj.user.profile.pk, ], request=request)
+
+    def get_like_url(self, obj):
+        request = self.context.get('request')
+        return reverse('GinderApp:like', args=[obj.user.profile.pk], request=request)
 
     class Meta:
         model = Post
@@ -56,4 +66,41 @@ class PostSerializer(ModelSerializer):
             'image',
             'description',
             'user_profile_url',
+            'like_url',
+        ]
+
+
+# Message Serializer
+class MessageSerializer(ModelSerializer):
+    user = SerializerMethodField()
+
+    def get_user(self, obj):
+        return obj.user.user.username
+
+    class Meta:
+        model = Message
+        fields = [
+            'user',
+            'text',
+        ]
+
+
+# Chat Serializer
+class ChatSerializer(ModelSerializer):
+    user1 = SerializerMethodField()
+    user2 = SerializerMethodField()
+    messages = MessageSerializer(many=True)
+
+    def get_user1(self, obj):
+        return obj.user_profile1.user.username
+
+    def get_user2(self, obj):
+        return obj.user_profile2.user.username
+
+    class Meta:
+        model = MatchChat
+        fields = [
+            'user1',
+            'user2',
+            'messages'
         ]

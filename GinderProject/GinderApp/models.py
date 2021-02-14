@@ -13,6 +13,9 @@ SUBSCRIPTION_CHOICES = (
 def upload_post_image(instance, filename):
     return f"posts/{instance.user}/{filename}"
 
+def upload_message_image(instance, filename):
+    return f"messages_images/{instance.user}/{filename}"
+
 
 class Profile(models.Model):
     location = models.PointField(blank=True, null=True)
@@ -20,6 +23,9 @@ class Profile(models.Model):
                                     choices=SUBSCRIPTION_CHOICES)
     bio = models.TextField(max_length=500, blank=True, null=True)
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile', blank=False)
+    likes = models.ManyToManyField(User, related_name='likes', blank=True)
+    # For later. Maybe will changed to Post, not Profile. Won't show viewed posts while sliding
+    viewed = models.ManyToManyField('Profile', related_name='viewed_by', blank=True)
 
     def __str__(self):
         return self.user.username
@@ -44,7 +50,7 @@ class Post(models.Model):
     image = models.ImageField(upload_to=upload_post_image, blank=False)
     description = models.TextField(max_length=200, blank=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=False, related_name='posts')
-    likes = models.ManyToManyField(User, related_name='likes', blank=True)
+
 
     def __str__(self):
         return self.user.username
@@ -52,3 +58,26 @@ class Post(models.Model):
     class Meta:
         verbose_name = 'Post'
         verbose_name_plural = 'Posts'
+
+
+class MatchChat(models.Model):
+    user_profile1 = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='matches1', blank=False)
+    user_profile2 = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='matches2', blank=False)
+
+    def __str__(self):
+        return f"{self.user_profile1.user.username}-{self.user_profile2.user.username}"
+
+    class Meta:
+        verbose_name = "MatchChat"
+        verbose_name_plural = "MatchChats"
+
+
+
+class Message(models.Model):
+    user = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='messages')
+    chat = models.ForeignKey(MatchChat, on_delete=models.CASCADE, related_name='messages')
+    text = models.TextField(max_length=500, blank=False)
+    image = models.ImageField(upload_to= upload_message_image, blank=True)
+
+    def __str__(self):
+        return f""
