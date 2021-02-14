@@ -1,4 +1,7 @@
+from rest_framework.reverse import reverse
+
 from GinderApp.models import MatchChat
+
 
 # Subscription swipes limits
 def get_user_daily_limit(user):
@@ -12,6 +15,7 @@ def get_user_daily_limit(user):
     else:
         return False
 
+
 # is match ckecker
 def is_match(user, post_author):
     user.profile.likes.add(post_author.pk)
@@ -22,5 +26,8 @@ def is_match(user, post_author):
     else:
         return False
 
+
 # Creating match if is_match
-# def create_match(profile1, profile2)
+def create_match(profile1, profile2, request):
+    match = MatchChat.objects.create(user_profile1=profile1, user_profile2=profile2)
+    return reverse('GinderApp:chat', args=[match.pk], request=request)

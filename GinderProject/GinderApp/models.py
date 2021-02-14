@@ -24,6 +24,7 @@ class Profile(models.Model):
     bio = models.TextField(max_length=500, blank=True, null=True)
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile', blank=False)
     likes = models.ManyToManyField(User, related_name='likes', blank=True)
+    # For later. Maybe will changed to Post, not Profile. Won't show viewed posts while sliding
     viewed = models.ManyToManyField('Profile', related_name='viewed_by', blank=True)
 
     def __str__(self):
@@ -60,8 +61,8 @@ class Post(models.Model):
 
 
 class MatchChat(models.Model):
-    user_profile1 = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='matches1')
-    user_profile2 = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='matches2')
+    user_profile1 = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='matches1', blank=False)
+    user_profile2 = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='matches2', blank=False)
 
     def __str__(self):
         return f"{self.user_profile1.user.username}-{self.user_profile2.user.username}"

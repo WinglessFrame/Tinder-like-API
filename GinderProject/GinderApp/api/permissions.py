@@ -19,3 +19,11 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
         if request.method in permissions.SAFE_METHODS:
             return True
         return request.user == obj.user
+
+
+class IsChatParticipant(permissions.BasePermission):
+    message = "You must be participant of chat to enter conversation"
+
+    def has_object_permission(self, request, view, obj):
+        profile = request.user.profile
+        return profile == obj.user_profile1 or profile == obj.user_profile2

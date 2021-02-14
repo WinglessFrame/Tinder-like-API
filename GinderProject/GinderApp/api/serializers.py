@@ -1,7 +1,7 @@
 from rest_framework.serializers import ModelSerializer, SerializerMethodField
 from rest_framework.reverse import reverse
 
-from GinderApp.models import Profile, Post
+from GinderApp.models import Profile, Post, MatchChat
 
 
 # Profile serializers
@@ -64,3 +64,21 @@ class PostSerializer(ModelSerializer):
             'like_url',
         ]
 
+
+# Chat Serializer
+class ChatSerializer(ModelSerializer):
+    user1 = SerializerMethodField()
+    user2 = SerializerMethodField()
+
+    def get_user1(self, obj):
+        return obj.user_profile1.user.username
+
+    def get_user2(self, obj):
+        return obj.user_profile2.user.username
+
+    class Meta:
+        model = MatchChat
+        fields = [
+            'user1',
+            'user2',
+        ]
