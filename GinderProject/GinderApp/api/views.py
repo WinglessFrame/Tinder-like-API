@@ -1,13 +1,21 @@
-from rest_framework.generics import RetrieveUpdateAPIView, RetrieveAPIView
+from rest_framework.generics import RetrieveUpdateAPIView, RetrieveAPIView, CreateAPIView, ListAPIView
 from rest_framework.authentication import SessionAuthentication, TokenAuthentication
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from django.shortcuts import redirect
+from django.db.models import Q
 
 from GinderApp.api.permissions import IsOwnerOrReadOnly, IsChatParticipant
-from GinderApp.api.serializers import ProfileSerializer, ChatSerializer
+from GinderApp.api.serializers import (
+    ProfileSerializer,
+    ChatSerializer,
+    MessageSerializer,
+    MessageCreateSerializer,
+    ListMatchChatSerializer,
+    )
 from GinderApp.api.api_utils import is_match, create_match
-from GinderApp.models import Profile, MatchChat
+from GinderApp.models import Profile, MatchChat, Message
 from GinderApp.api.throttling import SubscriptionRateThrottle
 
 
@@ -51,3 +59,32 @@ class ChatAPIView(RetrieveAPIView):
     serializer_class = ChatSerializer
     lookup_field = 'pk'
     queryset = MatchChat.objects.all()
+
+
+# Send Message
+class SendChatMessageAPIView(CreateAPIView):
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+    serializer_class = MessageCreateSerializer
+
+    def post(self, request, *args, **kwargs):
+        chat_pk = kwargs.get("pk")
+        text = request.data.get('text')
+        image = request.data.get('image')
+        chat = MatchChat.objects.get(pk=chat_pk)
+        if chat:
+            Message.objects.create(user=request.user.profile, text=text, image=image, chat=chat)
+            return redirect('GinderApp:chat', pk=chat_pk)
+        else: return Response(data={'message': 'chat not found'}, status=404)
+
+
+# Matches views
+class MatchesListAPIView(ListAPIView):
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+    serializer_class = ListMatchChatSerializer
+
+    def get_queryset(self):
+        user_profile = self.request.user.profile
+        queryset = MatchChat.objects.filter(Q(user_profile1 = user_profile) | Q(user_profile2 = user_profile))
+        return queryset

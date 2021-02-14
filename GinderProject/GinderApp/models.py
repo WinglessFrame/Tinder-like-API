@@ -80,4 +80,4 @@ class Message(models.Model):
     image = models.ImageField(upload_to= upload_message_image, blank=True)
 
     def __str__(self):
-        return f""
+        return f"{self.user.user.username}-{self.chat.pk}"
