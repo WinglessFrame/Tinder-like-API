@@ -6,7 +6,7 @@ from rest_framework.response import Response
 
 from GinderApp.api.permissions import IsOwnerOrReadOnly
 from GinderApp.api.serializers import ProfileSerializer
-from GinderApp.api.api_utils import is_match
+from GinderApp.api.api_utils import is_match#, create_match
 from GinderApp.models import Profile
 from GinderApp.api.throttling import SubscriptionRateThrottle
 

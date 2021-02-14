@@ -59,13 +59,24 @@ class Post(models.Model):
         verbose_name_plural = 'Posts'
 
 
-class Match_Chat(models.Model):
+class MatchChat(models.Model):
     user_profile1 = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='matches1')
     user_profile2 = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='matches2')
+
+    def __str__(self):
+        return f"{self.user_profile1.user.username}-{self.user_profile2.user.username}"
+
+    class Meta:
+        verbose_name = "MatchChat"
+        verbose_name_plural = "MatchChats"
+
 
 
 class Message(models.Model):
     user = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='messages')
-    chat = models.ForeignKey(Match_Chat, on_delete=models.CASCADE, related_name='messages')
+    chat = models.ForeignKey(MatchChat, on_delete=models.CASCADE, related_name='messages')
     text = models.TextField(max_length=500, blank=False)
     image = models.ImageField(upload_to= upload_message_image, blank=True)
+
+    def __str__(self):
+        return f""

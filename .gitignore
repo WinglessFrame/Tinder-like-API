@@ -3,7 +3,7 @@ __pycache__/
 *.py[cod]
 *$py.class
 # MEDIA ROOT
-posts/
+media/
 # .env file
 *.env
 # C extensions
