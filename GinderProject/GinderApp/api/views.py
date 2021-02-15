@@ -73,7 +73,7 @@ class SendChatMessageAPIView(CreateAPIView):
         image = request.data.get('image')
         chat = MatchChat.objects.get(pk=chat_pk)
         user_profile = request.user.profile
-        if user_profile == chat.user_profile1 or user_profile == chat.user_profile2:
+        if not (user_profile == chat.user_profile1 or user_profile == chat.user_profile2):
             return Response(data={'message': "You are not a chat participant"}, status=403)
         if chat:
             Message.objects.create(user=request.user.profile, text=text, image=image, chat=chat)
