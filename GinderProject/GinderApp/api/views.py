@@ -97,17 +97,22 @@ class MatchesListAPIView(ListAPIView):
 
 
 # Swipes
-class SwipesAPIView(RetrieveAPIView):
+class SwipesAPIView(APIView):
     authentication_classes = [SessionAuthentication, TokenAuthentication]
     permission_classes = [IsAuthenticated]
     # throttle_classes = SubscriptionRateThrottle TODO
     serializer_class = SwipePostSerializerClass
 
-    def get_queryset(self):
-        request_user = self.request.user
+    def get(self, request):
+        request_user = request.user
         profile = request_user.profile
-        all_objects = Post.objects.filter(
+        post = Post.objects.select_related('user').filter(
             ~Q(user=request_user) &
-            Q(user__profile__location__distance_lt=(profile.location, Distance(km=20)))
-        )
-        return all_objects.first()
+            Q(user__profile__location__distance_lt=(profile.location, Distance(km=20))) &
+            ~Q(user__profile__in=profile.viewed.all())
+        ).first()
+        if not post:
+            return Response(data={'message': 'found no one around'})  # TODO URL to clear viewed
+        profile.viewed.add(post.user.profile)
+        serializer = SwipePostSerializerClass(post)
+        return Response(serializer.data)
