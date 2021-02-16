@@ -6,11 +6,13 @@ from GinderApp.api.views import (
     ChatAPIView,
     SendChatMessageAPIView,
     MatchesListAPIView,
+    SwipesAPIView,
     )
 
 app_name = 'GinderApp'
 
 urlpatterns = [
+    path('', SwipesAPIView.as_view(), name='swipes'),
     path('profile/<int:pk>', ProfileAPIView.as_view(), name='profile'),
     path('like/<int:author_pk>', LikeUserPostAPIView.as_view(), name='like'),
     path('matches/', MatchesListAPIView.as_view(), name='matches'),

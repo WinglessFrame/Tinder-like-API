@@ -149,3 +149,13 @@ class ListMatchChatSerializer(ModelSerializer):
             'participants',
             'chat_url',
         ]
+
+
+class SwipePostSerializerClass(ModelSerializer):
+    class Meta:
+        model = Post
+        fields = (
+            'image',
+            'description',
+            'user'
+        )

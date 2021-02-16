@@ -5,6 +5,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from django.shortcuts import redirect
 from django.db.models import Q
+from django.contrib.gis.measure import Distance
 
 from GinderApp.api.permissions import IsOwnerOrReadOnly, IsChatParticipant
 from GinderApp.api.serializers import (
@@ -13,9 +14,10 @@ from GinderApp.api.serializers import (
     MessageSerializer,
     MessageCreateSerializer,
     ListMatchChatSerializer,
-    )
+    SwipePostSerializerClass,
+)
 from GinderApp.api.api_utils import is_match, create_match
-from GinderApp.models import Profile, MatchChat, Message
+from GinderApp.models import Profile, MatchChat, Message, Post
 from GinderApp.api.throttling import SubscriptionRateThrottle
 
 
@@ -78,7 +80,8 @@ class SendChatMessageAPIView(CreateAPIView):
         if chat:
             Message.objects.create(user=request.user.profile, text=text, image=image, chat=chat)
             return redirect('GinderApp:chat', pk=chat_pk)
-        else: return Response(data={'message': 'chat not found'}, status=404)
+        else:
+            return Response(data={'message': 'chat not found'}, status=404)
 
 
 # Matches views
@@ -89,5 +92,22 @@ class MatchesListAPIView(ListAPIView):
 
     def get_queryset(self):
         user_profile = self.request.user.profile
-        queryset = MatchChat.objects.filter(Q(user_profile1 = user_profile) | Q(user_profile2 = user_profile))
+        queryset = MatchChat.objects.filter(Q(user_profile1=user_profile) | Q(user_profile2=user_profile))
         return queryset
+
+
+# Swipes
+class SwipesAPIView(RetrieveAPIView):
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+    # throttle_classes = SubscriptionRateThrottle TODO
+    serializer_class = SwipePostSerializerClass
+
+    def get_queryset(self):
+        request_user = self.request.user
+        profile = request_user.profile
+        all_objects = Post.objects.filter(
+            ~Q(user=request_user) &
+            Q(user__profile__location__distance_lt=(profile.location, Distance(km=20)))
+        )
+        return all_objects.first()
