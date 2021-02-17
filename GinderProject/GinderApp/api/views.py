@@ -112,7 +112,7 @@ class MatchesListAPIView(ListAPIView):
 class SwipesAPIView(APIView):
     authentication_classes = [SessionAuthentication, TokenAuthentication]
     permission_classes = [IsAuthenticated, IsLocationSet]
-    # throttle_classes = SubscriptionRateThrottle TODO
+    # throttle_classes = SubscriptionRateThrottle TODO uncomment throttle class in "production"
     serializer_class = PostSerializer
 
     def get(self, request):
@@ -120,7 +120,7 @@ class SwipesAPIView(APIView):
         profile = request_user.profile
         post = Post.objects.select_related('user').filter(
             ~Q(user=request_user) &
-            Q(user__profile__location__distance_lt=(profile.location, Distance(km=20))) &
+            Q(user__profile__location__distance_lt=(profile.location, Distance(km=20))) &  # TODO distance based on subscription
             ~Q(user__profile__in=profile.viewed.all())
         ).first()
         if not post:
@@ -129,7 +129,7 @@ class SwipesAPIView(APIView):
                              'tip': f"You can try to clear viewed users in your profile"}
                             )
         profile.viewed.add(post.user.profile)
-        serializer = SwipePostSerializerClass(post, context={'request': request})
+        serializer = PostSerializer(post, context={'request': request})
         return Response(serializer.data)
 
 
