@@ -152,10 +152,20 @@ class ListMatchChatSerializer(ModelSerializer):
 
 
 class SwipePostSerializerClass(ModelSerializer):
+    like_url = SerializerMethodField()
+    image_url = SerializerMethodField()
+
+    def get_like_url(self, obj):
+        return reverse('GinderApp:like', args=[obj.user.pk], request=self.context.get('request'))
+
+    def get_image_url(self, obj):
+        return obj.image.url
+
     class Meta:
         model = Post
         fields = (
-            'image',
+            'image_url',
             'description',
-            'user'
+            'user',
+            'like_url',
         )
