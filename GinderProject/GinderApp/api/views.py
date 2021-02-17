@@ -1,4 +1,5 @@
-from rest_framework.generics import RetrieveUpdateAPIView, RetrieveAPIView, CreateAPIView, ListAPIView
+from rest_framework.generics import RetrieveUpdateAPIView, RetrieveAPIView, CreateAPIView, ListAPIView, \
+    get_object_or_404
 from rest_framework.authentication import SessionAuthentication, TokenAuthentication
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
@@ -7,14 +8,18 @@ from django.shortcuts import redirect
 from django.db.models import Q
 from django.contrib.gis.measure import Distance
 
-from GinderApp.api.permissions import IsOwnerOrReadOnly, IsChatParticipant
+from GinderApp.api.permissions import (
+    IsOwnerOrReadOnly,
+    IsChatParticipant,
+    IsLocationSet,
+    )
 from GinderApp.api.serializers import (
     ProfileSerializer,
     ChatSerializer,
     MessageSerializer,
     MessageCreateSerializer,
     ListMatchChatSerializer,
-    SwipePostSerializerClass,
+    PostSerializer,
 )
 from GinderApp.api.api_utils import is_match, create_match
 from GinderApp.models import Profile, MatchChat, Message, Post
@@ -27,7 +32,14 @@ class ProfileAPIView(RetrieveUpdateAPIView):
     permission_classes = [IsOwnerOrReadOnly, ]
     # throttle_classes = [SubscriptionRateThrottle,]
     serializer_class = ProfileSerializer
-    queryset = Profile.objects.all()
+
+    def get_queryset(self):
+        return self.request.user.profile
+
+    # overrides default one to skip lookup_field
+    def get_object(self):
+        queryset = self.get_queryset()
+        return queryset
 
 
 # Like View
@@ -99,9 +111,9 @@ class MatchesListAPIView(ListAPIView):
 # Swipes
 class SwipesAPIView(APIView):
     authentication_classes = [SessionAuthentication, TokenAuthentication]
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsLocationSet]
     # throttle_classes = SubscriptionRateThrottle TODO
-    serializer_class = SwipePostSerializerClass
+    serializer_class = PostSerializer
 
     def get(self, request):
         request_user = request.user
@@ -112,7 +124,21 @@ class SwipesAPIView(APIView):
             ~Q(user__profile__in=profile.viewed.all())
         ).first()
         if not post:
-            return Response(data={'message': 'found no one around'})  # TODO URL to clear viewed
+            return Response(data=
+                            {'message': 'found no one around',
+                             'tip': f"You can try to clear viewed users in your profile"}
+                            )
         profile.viewed.add(post.user.profile)
-        serializer = SwipePostSerializerClass(post)
+        serializer = SwipePostSerializerClass(post, context={'request': request})
         return Response(serializer.data)
+
+
+# Clear all viewed APIView
+class ClearViewedAPIView(APIView):
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        profile = request.user.profile
+        profile.viewed.clear()
+        return Response(data={'message': 'Viewed users are available in swipes'}, status=201)

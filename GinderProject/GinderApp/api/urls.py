@@ -7,15 +7,20 @@ from GinderApp.api.views import (
     SendChatMessageAPIView,
     MatchesListAPIView,
     SwipesAPIView,
+    ClearViewedAPIView,
     )
 
 app_name = 'GinderApp'
 
 urlpatterns = [
-    path('', SwipesAPIView.as_view(), name='swipes'),
-    path('profile/<int:pk>', ProfileAPIView.as_view(), name='profile'),
+    # main app endpoint
+    path('swipes', SwipesAPIView.as_view(), name='swipes'),
+    # profile manipulations
+    path('profile', ProfileAPIView.as_view(), name='profile'),
+    path('profile/clear', ClearViewedAPIView.as_view(), name='clear'),
+    path('profile/matches', MatchesListAPIView.as_view(), name='matches'),
+    # likes and chats endpoints
     path('like/<int:author_pk>', LikeUserPostAPIView.as_view(), name='like'),
-    path('matches/', MatchesListAPIView.as_view(), name='matches'),
     path('chat/<int:pk>', ChatAPIView.as_view(), name='chat'),
     path('chat/<int:pk>/message', SendChatMessageAPIView.as_view(), name='message')
 ]

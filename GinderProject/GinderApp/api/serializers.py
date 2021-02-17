@@ -1,4 +1,4 @@
-from rest_framework.serializers import ModelSerializer, SerializerMethodField
+from rest_framework.serializers import ModelSerializer, SerializerMethodField, ImageField
 from rest_framework.reverse import reverse
 
 from GinderApp.models import Profile, Post, MatchChat, Message
@@ -10,8 +10,12 @@ class ProfileSerializer(ModelSerializer):
     lon = SerializerMethodField()
     lat = SerializerMethodField()
     subscription = SerializerMethodField()
+    clear_viewed_url = SerializerMethodField()
     posts = SerializerMethodField()
     matches = SerializerMethodField()
+
+    def get_clear_viewed_url(self, obj):
+        return reverse('GinderApp:clear', request=self.context.get('request'))
 
     def get_username(self, obj):
         return obj.user.username
@@ -51,6 +55,7 @@ class ProfileSerializer(ModelSerializer):
             'lon',
             'lat',
             'subscription',
+            'clear_viewed_url',
             'matches',
             'posts'
         ]
@@ -58,12 +63,7 @@ class ProfileSerializer(ModelSerializer):
 
 # Post serializers
 class PostSerializer(ModelSerializer):
-    user_profile_url = SerializerMethodField()
     like_url = SerializerMethodField()
-
-    def get_user_profile_url(self, obj):
-        request = self.context.get('request')
-        return reverse('GinderApp:profile', args=[obj.user.profile.pk, ], request=request)
 
     def get_like_url(self, obj):
         request = self.context.get('request')
@@ -74,7 +74,6 @@ class PostSerializer(ModelSerializer):
         fields = [
             'image',
             'description',
-            'user_profile_url',
             'like_url',
         ]
 
@@ -149,23 +148,3 @@ class ListMatchChatSerializer(ModelSerializer):
             'participants',
             'chat_url',
         ]
-
-
-class SwipePostSerializerClass(ModelSerializer):
-    like_url = SerializerMethodField()
-    image_url = SerializerMethodField()
-
-    def get_like_url(self, obj):
-        return reverse('GinderApp:like', args=[obj.user.pk], request=self.context.get('request'))
-
-    def get_image_url(self, obj):
-        return obj.image.url
-
-    class Meta:
-        model = Post
-        fields = (
-            'image_url',
-            'description',
-            'user',
-            'like_url',
-        )
