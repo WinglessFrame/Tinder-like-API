@@ -16,6 +16,6 @@
 * User can swipe (like in Tinder). He can see swipes limited amount per day (depends on subscription).
   Swipe consists of one post of random people around (range depends on subscription).
   User can like the post or skip to next swipe (go to the same endpoint). 
-  User can't find the post of the person whose post he has already seen (excepts if he cleared his viewed list in profile).
+  User can't find the post of the person whose post he has already seen (excepts if user cleared his viewed list in profile).
   After two users liked posts of one another, the match chat is started where they can converse. 
   Any of participants can delete chat, so the chat will be finished.
