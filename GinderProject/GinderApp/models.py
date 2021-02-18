@@ -26,7 +26,7 @@ class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile', blank=False)
     likes = models.ManyToManyField(User, related_name='likes', blank=True)
     viewed = models.ManyToManyField('Profile', related_name='viewed_by', blank=True)
-    search_distance = models.IntegerField(blank=True, default=20)
+    search_distance = models.IntegerField(blank=True, default=10)
 
     def __str__(self):
         return self.user.username
@@ -53,7 +53,7 @@ def save_user_profile(sender, instance, **kwargs):
 def change_subscription(sender, instance, created, **kwargs):
     if not created:
         if instance.subscription == 'default':
-            Profile.objects.filter(pk=instance.pk).update(search_distance=20)
+            Profile.objects.filter(pk=instance.pk).update(search_distance=10)
         if instance.subscription == 'silver':
             Profile.objects.filter(pk=instance.pk).update(search_distance=25)
 

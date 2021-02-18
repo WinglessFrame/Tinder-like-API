@@ -124,7 +124,7 @@ class SendChatMessageAPIView(CreateAPIView):
 class SwipesAPIView(APIView):
     authentication_classes = [SessionAuthentication, TokenAuthentication]
     permission_classes = [IsAuthenticated, IsLocationSet]
-    # throttle_classes = SubscriptionRateThrottle TODO uncomment throttle class in "production"
+    throttle_classes = [SubscriptionRateThrottle]
     serializer_class = PostSerializer
 
     def get(self, request):
