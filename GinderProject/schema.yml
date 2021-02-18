@@ -1,0 +1,874 @@
+openapi: 3.0.3
+info:
+  title: ''
+  version: 0.0.0
+paths:
+  /api/schema/:
+    get:
+      operationId: api_schema_retrieve
+      description: |-
+        OpenApi3 schema for this API. Format can be selected via content negotiation.
+
+        - YAML: application/vnd.oai.openapi
+        - JSON: application/vnd.oai.openapi+json
+      parameters:
+      - in: query
+        name: format
+        schema:
+          type: string
+          enum:
+          - json
+          - yaml
+      - in: query
+        name: lang
+        schema:
+          type: string
+          enum:
+          - af
+          - ar
+          - ar-dz
+          - ast
+          - az
+          - be
+          - bg
+          - bn
+          - br
+          - bs
+          - ca
+          - cs
+          - cy
+          - da
+          - de
+          - dsb
+          - el
+          - en
+          - en-au
+          - en-gb
+          - eo
+          - es
+          - es-ar
+          - es-co
+          - es-mx
+          - es-ni
+          - es-ve
+          - et
+          - eu
+          - fa
+          - fi
+          - fr
+          - fy
+          - ga
+          - gd
+          - gl
+          - he
+          - hi
+          - hr
+          - hsb
+          - hu
+          - hy
+          - ia
+          - id
+          - ig
+          - io
+          - is
+          - it
+          - ja
+          - ka
+          - kab
+          - kk
+          - km
+          - kn
+          - ko
+          - ky
+          - lb
+          - lt
+          - lv
+          - mk
+          - ml
+          - mn
+          - mr
+          - my
+          - nb
+          - ne
+          - nl
+          - nn
+          - os
+          - pa
+          - pl
+          - pt
+          - pt-br
+          - ro
+          - ru
+          - sk
+          - sl
+          - sq
+          - sr
+          - sr-latn
+          - sv
+          - sw
+          - ta
+          - te
+          - tg
+          - th
+          - tk
+          - tr
+          - tt
+          - udm
+          - uk
+          - ur
+          - uz
+          - vi
+          - zh-hans
+          - zh-hant
+      tags:
+      - api
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/vnd.oai.openapi:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/yaml:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/vnd.oai.openapi+json:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /app/api/accounts/register/:
+    post:
+      operationId: app_api_accounts_register_create
+      description: ''
+      tags:
+      - app
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRegister'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserRegister'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserRegister'
+        required: true
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserRegister'
+          description: ''
+  /app/api/accounts/token/:
+    post:
+      operationId: app_api_accounts_token_create
+      description: |-
+        Takes a set of user credentials and returns an access and refresh JSON web
+        token pair to prove the authentication of those credentials.
+      tags:
+      - app
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomTokenObtainPair'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CustomTokenObtainPair'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CustomTokenObtainPair'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomTokenObtainPair'
+          description: ''
+  /app/api/accounts/token/refresh/:
+    post:
+      operationId: app_api_accounts_token_refresh_create
+      description: |-
+        Takes a refresh type JSON web token and returns an access type JSON web
+        token if the refresh token is valid.
+      tags:
+      - app
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenRefresh'
+          description: ''
+  /app/api/chat/{id}:
+    get:
+      operationId: app_api_chat_retrieve
+      description: ''
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - app
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Chat'
+          description: ''
+    delete:
+      operationId: app_api_chat_destroy
+      description: ''
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - app
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '204':
+          description: No response body
+  /app/api/chat/{id}/message:
+    post:
+      operationId: app_api_chat_message_create
+      description: ''
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - app
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MessageCreate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/MessageCreate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/MessageCreate'
+        required: true
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageCreate'
+          description: ''
+  /app/api/profile:
+    get:
+      operationId: app_api_profile_retrieve
+      description: ''
+      tags:
+      - app
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profile'
+          description: ''
+    put:
+      operationId: app_api_profile_update
+      description: ''
+      tags:
+      - app
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Profile'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Profile'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Profile'
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profile'
+          description: ''
+    patch:
+      operationId: app_api_profile_partial_update
+      description: ''
+      tags:
+      - app
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedProfile'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedProfile'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedProfile'
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Profile'
+          description: ''
+  /app/api/profile/add_post:
+    post:
+      operationId: app_api_profile_add_post_create
+      description: ''
+      tags:
+      - app
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostCreate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PostCreate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PostCreate'
+        required: true
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostCreate'
+          description: ''
+  /app/api/profile/change_distance:
+    put:
+      operationId: app_api_profile_change_distance_update
+      description: ''
+      tags:
+      - app
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateSearchDistance'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UpdateSearchDistance'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UpdateSearchDistance'
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateSearchDistance'
+          description: ''
+    patch:
+      operationId: app_api_profile_change_distance_partial_update
+      description: ''
+      tags:
+      - app
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedUpdateSearchDistance'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedUpdateSearchDistance'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedUpdateSearchDistance'
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateSearchDistance'
+          description: ''
+  /app/api/profile/clear:
+    post:
+      operationId: app_api_profile_clear_create
+      description: ''
+      tags:
+      - app
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          description: No response body
+  /app/api/profile/posts/{id}:
+    get:
+      operationId: app_api_profile_posts_retrieve
+      description: ''
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - app
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostOwner'
+          description: ''
+    put:
+      operationId: app_api_profile_posts_update
+      description: ''
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - app
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostOwner'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PostOwner'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PostOwner'
+        required: true
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostOwner'
+          description: ''
+    patch:
+      operationId: app_api_profile_posts_partial_update
+      description: ''
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - app
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedPostOwner'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedPostOwner'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedPostOwner'
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostOwner'
+          description: ''
+    delete:
+      operationId: app_api_profile_posts_destroy
+      description: ''
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - app
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '204':
+          description: No response body
+  /app/api/swipes:
+    get:
+      operationId: app_api_swipes_retrieve
+      description: ''
+      tags:
+      - app
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+          description: ''
+  /app/api/swipes/like/{author_pk}:
+    post:
+      operationId: app_api_swipes_like_create
+      description: ''
+      parameters:
+      - in: path
+        name: author_pk
+        schema:
+          type: integer
+        required: true
+      tags:
+      - app
+      security:
+      - cookieAuth: []
+      - tokenAuth: []
+      responses:
+        '200':
+          description: No response body
+components:
+  schemas:
+    Chat:
+      type: object
+      properties:
+        user1:
+          type: string
+          readOnly: true
+        user2:
+          type: string
+          readOnly: true
+        send_message_url:
+          type: string
+          readOnly: true
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/Message'
+      required:
+      - messages
+      - send_message_url
+      - user1
+      - user2
+    CustomTokenObtainPair:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+          writeOnly: true
+      required:
+      - password
+      - username
+    Message:
+      type: object
+      properties:
+        user:
+          type: string
+          readOnly: true
+        text:
+          type: string
+          maxLength: 500
+        image:
+          type: string
+          format: uri
+      required:
+      - text
+      - user
+    MessageCreate:
+      type: object
+      properties:
+        text:
+          type: string
+          maxLength: 500
+        image:
+          type: string
+          format: uri
+      required:
+      - text
+    PatchedPostOwner:
+      type: object
+      properties:
+        image:
+          type: string
+          format: uri
+        description:
+          type: string
+          maxLength: 200
+        delete_update_url:
+          type: string
+          readOnly: true
+    PatchedProfile:
+      type: object
+      description: Deprecated, will be removed in django-rest-framework-gis 1.0
+      properties:
+        username:
+          type: string
+          readOnly: true
+        bio:
+          type: string
+          nullable: true
+          maxLength: 500
+        location:
+          type: string
+          nullable: true
+        subscription:
+          type: string
+          readOnly: true
+        search_distance:
+          type: string
+          readOnly: true
+        update_search_distance_url:
+          type: string
+          readOnly: true
+        create_post_url:
+          type: string
+          readOnly: true
+        clear_viewed_url:
+          type: string
+          readOnly: true
+        matches:
+          type: string
+          readOnly: true
+        posts:
+          type: string
+          readOnly: true
+    PatchedUpdateSearchDistance:
+      type: object
+      properties:
+        search_distance:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+    Post:
+      type: object
+      properties:
+        image:
+          type: string
+          format: uri
+        description:
+          type: string
+          maxLength: 200
+        like_url:
+          type: string
+          readOnly: true
+      required:
+      - image
+      - like_url
+    PostCreate:
+      type: object
+      properties:
+        image:
+          type: string
+          format: uri
+        description:
+          type: string
+          maxLength: 200
+        user:
+          type: integer
+          readOnly: true
+      required:
+      - image
+      - user
+    PostOwner:
+      type: object
+      properties:
+        image:
+          type: string
+          format: uri
+        description:
+          type: string
+          maxLength: 200
+        delete_update_url:
+          type: string
+          readOnly: true
+      required:
+      - delete_update_url
+      - image
+    Profile:
+      type: object
+      description: Deprecated, will be removed in django-rest-framework-gis 1.0
+      properties:
+        username:
+          type: string
+          readOnly: true
+        bio:
+          type: string
+          nullable: true
+          maxLength: 500
+        location:
+          type: string
+          nullable: true
+        subscription:
+          type: string
+          readOnly: true
+        search_distance:
+          type: string
+          readOnly: true
+        update_search_distance_url:
+          type: string
+          readOnly: true
+        create_post_url:
+          type: string
+          readOnly: true
+        clear_viewed_url:
+          type: string
+          readOnly: true
+        matches:
+          type: string
+          readOnly: true
+        posts:
+          type: string
+          readOnly: true
+      required:
+      - clear_viewed_url
+      - create_post_url
+      - matches
+      - posts
+      - search_distance
+      - subscription
+      - update_search_distance_url
+      - username
+    TokenRefresh:
+      type: object
+      properties:
+        access:
+          type: string
+          readOnly: true
+        refresh:
+          type: string
+          writeOnly: true
+      required:
+      - access
+      - refresh
+    UpdateSearchDistance:
+      type: object
+      properties:
+        search_distance:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+    UserRegister:
+      type: object
+      properties:
+        username:
+          type: string
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        password:
+          type: string
+          maxLength: 128
+        password2:
+          type: string
+          writeOnly: true
+        token:
+          type: string
+          readOnly: true
+        message:
+          type: string
+          readOnly: true
+      required:
+      - message
+      - password
+      - password2
+      - token
+      - username
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: Session
+    jwtAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: Bearer
+    tokenAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: Token-based authentication with required prefix "Token"

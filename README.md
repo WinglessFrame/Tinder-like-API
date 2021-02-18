@@ -6,7 +6,11 @@
 * [GeoDjango](https://docs.djangoproject.com/en/3.1/ref/contrib/gis/)
 * [PostgreSQL](https://www.postgresql.org/) [(PostGIS extension)](https://postgis.net/)
 * [django-rest-framework-gis](https://github.com/openwisp/django-rest-framework-gis)
-
+* [drf-spectacuar](https://github.com/tfranzel/drf-spectacular)
+### Things to do
+-[ ] Refactor code (Business Logic -> utils.py)
+-[ ] Cover with test
+### All api endpoints you can look in [schema.yml](schema.yml) file
 ### What is it about:
 * User is able to create account
 * User has subscription and location
