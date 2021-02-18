@@ -20,7 +20,6 @@ class SubscriptionRateThrottle(UserRateThrottle):
         On failure calls `throttle_failure`.
         """
         if request.user.is_staff:
-            print(request.user.profile.subscription)
             return True
 
         if request.user.is_authenticated:

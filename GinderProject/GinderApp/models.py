@@ -25,8 +25,8 @@ class Profile(models.Model):
     bio = models.TextField(max_length=500, blank=True, null=True)
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile', blank=False)
     likes = models.ManyToManyField(User, related_name='likes', blank=True)
-    # For later. Maybe will changed to Post, not Profile. Won't show viewed posts while sliding
     viewed = models.ManyToManyField('Profile', related_name='viewed_by', blank=True)
+    search_distance = models.IntegerField(blank=True, default=10)
 
     def __str__(self):
         return self.user.username
@@ -45,6 +45,17 @@ def create_user_profile(sender, instance, created, **kwargs):
 @receiver(post_save, sender=User)
 def save_user_profile(sender, instance, **kwargs):
     instance.profile.save()
+
+
+# Update search distance when profile subscription is updated
+# Gold subscription can be updated through specific endpoint
+@receiver(post_save, sender=Profile)
+def change_subscription(sender, instance, created, **kwargs):
+    if not created:
+        if instance.subscription == 'default':
+            Profile.objects.filter(pk=instance.pk).update(search_distance=10)
+        if instance.subscription == 'silver':
+            Profile.objects.filter(pk=instance.pk).update(search_distance=25)
 
 
 class Post(models.Model):

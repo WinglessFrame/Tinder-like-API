@@ -18,6 +18,9 @@
   User can't find the post of the person whose post he has already seen (excepts if user cleared his viewed list in profile).
   After two users liked posts of one another, the match chat is started where they can converse. 
   Any of participants can delete chat, so the chat will be finished.
+  * default - 20/day, 10 km radius
+  * silver - 100/day, 20 km raius
+  * gold - over 9 thousand  😅, any radius
 #### Profile endpoint gives this-like response:
 ```json5
 {
@@ -30,7 +33,9 @@
             53.909845
         ]
     },
-    "subscription": "default",
+    "subscription": "silver",
+    "search_distance": 25,
+    "update_search_distance_url": "http://127.0.0.1:8000/app/api/profile/change_distance",
     "create_post_url": "http://127.0.0.1:8000/app/api/profile/add_post",
     "clear_viewed_url": "http://127.0.0.1:8000/app/api/profile/clear",
     "matches": [

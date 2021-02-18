@@ -9,6 +9,7 @@ from GinderApp.api.views import (
     ClearViewedAPIView,
     CreatePostAPIView,
     UpdateDeletePostAPIView,
+    UpdateSearchDistanceAPIView,
     )
 
 app_name = 'GinderApp'
@@ -19,6 +20,7 @@ urlpatterns = [
     path('swipes/like/<int:author_pk>', LikeUserPostAPIView.as_view(), name='like'),
     # profile settings and info
     path('profile', ProfileAPIView.as_view(), name='profile'),
+    path('profile/change_distance', UpdateSearchDistanceAPIView.as_view(), name='update_distance'),
     path('profile/clear', ClearViewedAPIView.as_view(), name='clear'),
     path('profile/add_post', CreatePostAPIView.as_view(), name='create_post'),
     path('profile/posts/<int:pk>', UpdateDeletePostAPIView.as_view(), name='update_delete_post'),

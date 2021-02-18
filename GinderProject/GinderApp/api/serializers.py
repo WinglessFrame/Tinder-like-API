@@ -1,4 +1,10 @@
-from rest_framework.serializers import ModelSerializer, SerializerMethodField, ImageField, PrimaryKeyRelatedField
+from rest_framework.serializers import (
+    ModelSerializer,
+    SerializerMethodField,
+    PrimaryKeyRelatedField,
+    Serializer,
+    IntegerField,
+    )
 from rest_framework_gis.serializers import GeoFeatureModelSerializer, GeoModelSerializer
 from rest_framework.reverse import reverse
 from django.db.models import Q
@@ -14,6 +20,11 @@ class ProfileSerializer(GeoModelSerializer):
     create_post_url = SerializerMethodField()
     posts = SerializerMethodField()
     matches = SerializerMethodField()
+    search_distance = SerializerMethodField()
+    update_search_distance_url = SerializerMethodField()
+
+    def get_search_distance(self, obj):
+        return obj.search_distance
 
     def get_create_post_url(self, obj):
         return reverse('GinderApp:create_post', request=self.context.get('request'))
@@ -36,6 +47,9 @@ class ProfileSerializer(GeoModelSerializer):
         matches_serializer = ListMatchChatSerializer(queryset, many=True, context=self.context)
         return matches_serializer.data
 
+    def get_update_search_distance_url(self, obj):
+        return reverse('GinderApp:update_distance', request=self.context.get('request'))
+
     class Meta:
         model = Profile
         geo_field = 'location'
@@ -44,6 +58,8 @@ class ProfileSerializer(GeoModelSerializer):
             'bio',
             'location',
             'subscription',
+            'search_distance',
+            'update_search_distance_url',
             'create_post_url',
             'clear_viewed_url',
             'matches',
@@ -172,3 +188,9 @@ class ListMatchChatSerializer(ModelSerializer):
             'participants',
             'chat_url',
         ]
+
+
+class UpdateSearchDistanceSerializer(ModelSerializer):
+    class Meta:
+        model = Profile
+        fields = ('search_distance',)

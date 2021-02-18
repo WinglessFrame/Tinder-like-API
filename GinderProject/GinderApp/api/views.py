@@ -3,6 +3,7 @@ from rest_framework.generics import (
     RetrieveDestroyAPIView,
     RetrieveUpdateDestroyAPIView,
     CreateAPIView,
+    UpdateAPIView,
 )
 from rest_framework.authentication import SessionAuthentication, TokenAuthentication
 from rest_framework.views import APIView
@@ -17,6 +18,7 @@ from GinderApp.api.permissions import (
     IsChatParticipant,
     IsLocationSet,
     IsPostOwner,
+    IsGoldSubscription,
 )
 from GinderApp.api.serializers import (
     ProfileSerializer,
@@ -27,6 +29,7 @@ from GinderApp.api.serializers import (
     PostSerializer,
     PostCreateSerializer,
     PostOwnerSerializer,
+    UpdateSearchDistanceSerializer,
 )
 from GinderApp.api.api_utils import is_match, create_match
 from GinderApp.models import Profile, MatchChat, Message, Post
@@ -41,6 +44,21 @@ class ProfileAPIView(RetrieveUpdateAPIView):
 
     def get_queryset(self):
         return Profile.objects.select_related().get(pk=self.request.user.profile.pk)
+
+    # overrides default one to skip lookup_field
+    def get_object(self):
+        queryset = self.get_queryset()
+        return queryset
+
+
+# Update search distance View. Only for gold subscription plan
+class UpdateSearchDistanceAPIView(UpdateAPIView):
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
+    permission_classes = [IsAuthenticated, IsGoldSubscription]
+    serializer_class = UpdateSearchDistanceSerializer
+
+    def get_queryset(self):
+        return Profile.objects.get(pk=self.request.user.profile.pk)
 
     # overrides default one to skip lookup_field
     def get_object(self):
@@ -106,16 +124,17 @@ class SendChatMessageAPIView(CreateAPIView):
 class SwipesAPIView(APIView):
     authentication_classes = [SessionAuthentication, TokenAuthentication]
     permission_classes = [IsAuthenticated, IsLocationSet]
-    # throttle_classes = SubscriptionRateThrottle TODO uncomment throttle class in "production"
+    throttle_classes = [SubscriptionRateThrottle]
     serializer_class = PostSerializer
 
     def get(self, request):
         request_user = request.user
         profile = request_user.profile
+        distance = profile.search_distance
         post = Post.objects.select_related('user').filter(
             ~Q(user=request_user) &
             Q(user__profile__location__distance_lt=(
-                profile.location, Distance(km=20))) &  # TODO distance based on subscription
+                profile.location, Distance(km=distance))) &  # TODO distance based on subscription
             ~Q(user__profile__in=profile.viewed.all())
         ).first()
         if not post:
@@ -156,3 +175,4 @@ class UpdateDeletePostAPIView(RetrieveUpdateDestroyAPIView):
     def get_queryset(self):
         user = self.request.user
         return user.posts.all()
+
