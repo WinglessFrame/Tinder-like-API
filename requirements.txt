@@ -1,6 +1,8 @@
 asgiref==3.3.1
 Django==3.1.6
+django-debug-toolbar==3.2
 djangorestframework==3.12.2
+djangorestframework-gis==0.17
 djangorestframework-simplejwt==4.6.0
 GDAL @ file:///C:/Users/TSO_new1/Downloads/GDAL-3.2.1-cp38-cp38-win_amd64.whl
 Pillow==8.1.0

@@ -4,6 +4,8 @@ __pycache__/
 *$py.class
 # MEDIA ROOT
 media/
+# STATIC ROOT
+static/
 # .env file
 *.env
 # C extensions
