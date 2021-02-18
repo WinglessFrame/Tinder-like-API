@@ -35,3 +35,10 @@ class IsLocationSet(permissions.BasePermission):
 
     def has_permission(self, request, view):
         return request.user.profile.location
+
+
+class IsPostOwner(permissions.BasePermission):
+    message = "You is not a post owner"
+
+    def has_object_permission(self, request, view, obj):
+        return obj.user == request.user
