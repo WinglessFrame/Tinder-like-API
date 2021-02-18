@@ -42,3 +42,10 @@ class IsPostOwner(permissions.BasePermission):
 
     def has_object_permission(self, request, view, obj):
         return obj.user == request.user
+
+
+class IsGoldSubscription(permissions.BasePermission):
+    message = "you have to own gold subscription plan to update search distance"
+
+    def has_permission(self, request, view):
+        return request.user.profile.subscription == 'gold'
