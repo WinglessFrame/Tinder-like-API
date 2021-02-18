@@ -1,23 +1,48 @@
-from rest_framework.generics import RetrieveUpdateAPIView, RetrieveAPIView
+from rest_framework.generics import (
+    RetrieveUpdateAPIView,
+    CreateAPIView,
+    RetrieveDestroyAPIView,
+)
 from rest_framework.authentication import SessionAuthentication, TokenAuthentication
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from django.shortcuts import redirect
+from django.db.models import Q
+from django.contrib.gis.measure import Distance
 
-from GinderApp.api.permissions import IsOwnerOrReadOnly, IsChatParticipant
-from GinderApp.api.serializers import ProfileSerializer, ChatSerializer
+from GinderApp.api.permissions import (
+    IsOwnerOrReadOnly,
+    IsChatParticipant,
+    IsLocationSet,
+)
+from GinderApp.api.serializers import (
+    ProfileSerializer,
+    ChatSerializer,
+    MessageSerializer,
+    MessageCreateSerializer,
+    ListMatchChatSerializer,
+    PostSerializer,
+)
 from GinderApp.api.api_utils import is_match, create_match
-from GinderApp.models import Profile, MatchChat
+from GinderApp.models import Profile, MatchChat, Message, Post
 from GinderApp.api.throttling import SubscriptionRateThrottle
 
 
 # Profile views
 class ProfileAPIView(RetrieveUpdateAPIView):
     authentication_classes = [SessionAuthentication, TokenAuthentication]
-    permission_classes = [IsOwnerOrReadOnly, ]
+    permission_classes = [IsAuthenticated]
     # throttle_classes = [SubscriptionRateThrottle,]
     serializer_class = ProfileSerializer
-    queryset = Profile.objects.all()
+
+    def get_queryset(self):
+        return self.request.user.profile
+
+    # overrides default one to skip lookup_field
+    def get_object(self):
+        queryset = self.get_queryset()
+        return queryset
 
 
 # Like View
@@ -45,9 +70,67 @@ class LikeUserPostAPIView(APIView):
 
 
 # Chat View
-class ChatAPIView(RetrieveAPIView):
+class ChatAPIView(RetrieveDestroyAPIView):
     authentication_classes = [SessionAuthentication, TokenAuthentication]
     permission_classes = [IsChatParticipant, ]
     serializer_class = ChatSerializer
     lookup_field = 'pk'
     queryset = MatchChat.objects.all()
+
+
+# Send Message
+class SendChatMessageAPIView(CreateAPIView):
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+    serializer_class = MessageCreateSerializer
+
+    def post(self, request, *args, **kwargs):
+        chat_pk = kwargs.get("pk")
+        text = request.data.get('text')
+        image = request.data.get('image')
+        chat = MatchChat.objects.get(pk=chat_pk)
+        user_profile = request.user.profile
+        if not (user_profile == chat.user_profile1 or user_profile == chat.user_profile2):
+            return Response(data={'message': "You are not a chat participant"}, status=403)
+        if chat:
+            Message.objects.create(user=request.user.profile, text=text, image=image, chat=chat)
+            return redirect('GinderApp:chat', pk=chat_pk)
+        else:
+            return Response(data={'message': 'chat not found'}, status=404)
+
+
+# Swipes
+class SwipesAPIView(APIView):
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
+    permission_classes = [IsAuthenticated, IsLocationSet]
+    # throttle_classes = SubscriptionRateThrottle TODO uncomment throttle class in "production"
+    serializer_class = PostSerializer
+
+    def get(self, request):
+        request_user = request.user
+        profile = request_user.profile
+        post = Post.objects.select_related('user').filter(
+            ~Q(user=request_user) &
+            Q(user__profile__location__distance_lt=(
+                profile.location, Distance(km=20))) &  # TODO distance based on subscription
+            ~Q(user__profile__in=profile.viewed.all())
+        ).first()
+        if not post:
+            return Response(data=
+                            {'message': 'found no one around',
+                             'tip': f"You can try to clear viewed users in your profile"}
+                            )
+        profile.viewed.add(post.user.profile)
+        serializer = PostSerializer(post, context={'request': request})
+        return Response(serializer.data)
+
+
+# Clear all viewed APIView
+class ClearViewedAPIView(APIView):
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        profile = request.user.profile
+        profile.viewed.clear()
+        return Response(data={'message': 'Viewed users are available in swipes'}, status=201)

@@ -1,5 +1,6 @@
-from rest_framework.serializers import ModelSerializer, SerializerMethodField
+from rest_framework.serializers import ModelSerializer, SerializerMethodField, ImageField
 from rest_framework.reverse import reverse
+from django.db.models import Q
 
 from GinderApp.models import Profile, Post, MatchChat, Message
 
@@ -10,7 +11,12 @@ class ProfileSerializer(ModelSerializer):
     lon = SerializerMethodField()
     lat = SerializerMethodField()
     subscription = SerializerMethodField()
+    clear_viewed_url = SerializerMethodField()
     posts = SerializerMethodField()
+    matches = SerializerMethodField()
+
+    def get_clear_viewed_url(self, obj):
+        return reverse('GinderApp:clear', request=self.context.get('request'))
 
     def get_username(self, obj):
         return obj.user.username
@@ -34,6 +40,11 @@ class ProfileSerializer(ModelSerializer):
         serializer = PostSerializer(obj.user.posts, many=True, context=self.context)
         return serializer.data
 
+    def get_matches(self, obj):
+        queryset = MatchChat.objects.filter(Q(user_profile1=obj) | Q(user_profile2=obj))
+        matches_serializer = ListMatchChatSerializer(queryset, many=True, context=self.context)
+        return matches_serializer.data
+
     class Meta:
         model = Profile
         fields = [
@@ -43,18 +54,15 @@ class ProfileSerializer(ModelSerializer):
             'lon',
             'lat',
             'subscription',
+            'clear_viewed_url',
+            'matches',
             'posts'
         ]
 
 
 # Post serializers
 class PostSerializer(ModelSerializer):
-    user_profile_url = SerializerMethodField()
     like_url = SerializerMethodField()
-
-    def get_user_profile_url(self, obj):
-        request = self.context.get('request')
-        return reverse('GinderApp:profile', args=[obj.user.profile.pk, ], request=request)
 
     def get_like_url(self, obj):
         request = self.context.get('request')
@@ -65,7 +73,6 @@ class PostSerializer(ModelSerializer):
         fields = [
             'image',
             'description',
-            'user_profile_url',
             'like_url',
         ]
 
@@ -82,6 +89,16 @@ class MessageSerializer(ModelSerializer):
         fields = [
             'user',
             'text',
+            'image',
+        ]
+
+
+class MessageCreateSerializer(ModelSerializer):
+    class Meta:
+        model = Message
+        fields = [
+            'text',
+            'image',
         ]
 
 
@@ -89,6 +106,7 @@ class MessageSerializer(ModelSerializer):
 class ChatSerializer(ModelSerializer):
     user1 = SerializerMethodField()
     user2 = SerializerMethodField()
+    send_message_url = SerializerMethodField()
     messages = MessageSerializer(many=True)
 
     def get_user1(self, obj):
@@ -97,10 +115,35 @@ class ChatSerializer(ModelSerializer):
     def get_user2(self, obj):
         return obj.user_profile2.user.username
 
+    def get_send_message_url(self, obj):
+        request = self.context.get('request')
+        return reverse('GinderApp:message', args=[obj.pk], request=request)
+
     class Meta:
         model = MatchChat
         fields = [
             'user1',
             'user2',
-            'messages'
+            'send_message_url',
+            'messages',
+        ]
+
+
+# List
+class ListMatchChatSerializer(ModelSerializer):
+    chat_url = SerializerMethodField()
+    participants = SerializerMethodField()
+
+    def get_chat_url(self, obj):
+        request = self.context.get('request')
+        return reverse('GinderApp:chat', args=[obj.pk], request=request)
+
+    def get_participants(self, obj):
+        return str(obj)
+
+    class Meta:
+        model = MatchChat
+        fields = [
+            'participants',
+            'chat_url',
         ]

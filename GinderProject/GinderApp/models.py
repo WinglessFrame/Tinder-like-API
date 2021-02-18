@@ -13,6 +13,7 @@ SUBSCRIPTION_CHOICES = (
 def upload_post_image(instance, filename):
     return f"posts/{instance.user}/{filename}"
 
+
 def upload_message_image(instance, filename):
     return f"messages_images/{instance.user}/{filename}"
 
@@ -51,7 +52,6 @@ class Post(models.Model):
     description = models.TextField(max_length=200, blank=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=False, related_name='posts')
 
-
     def __str__(self):
         return self.user.username
 
@@ -72,12 +72,11 @@ class MatchChat(models.Model):
         verbose_name_plural = "MatchChats"
 
 
-
 class Message(models.Model):
     user = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='messages')
     chat = models.ForeignKey(MatchChat, on_delete=models.CASCADE, related_name='messages')
     text = models.TextField(max_length=500, blank=False)
-    image = models.ImageField(upload_to= upload_message_image, blank=True)
+    image = models.ImageField(upload_to=upload_message_image, blank=True)
 
     def __str__(self):
-        return f""
+        return f"{self.user.user.username}-{self.chat.pk}"
