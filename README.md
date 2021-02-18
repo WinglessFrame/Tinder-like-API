@@ -10,7 +10,8 @@
 ### Things to do
 - [ ] Refactor code (Business Logic -> utils.py)
 - [ ] Cover with test
-### All api endpoints you can look in [schema.yml](schema.yml) file
+### All api endpoints you can look in [schema.yml](schema.yml) file (copypaste file in this editor [swagger.io](https://editor.swagger.io/))
+
 ### What is it about:
 * User is able to create account
 * User has subscription and location
