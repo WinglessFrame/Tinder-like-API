@@ -1,5 +1,8 @@
-from rest_framework.generics import RetrieveUpdateAPIView, RetrieveAPIView, CreateAPIView, ListAPIView, \
-    get_object_or_404
+from rest_framework.generics import (
+    RetrieveUpdateAPIView,
+    CreateAPIView,
+    RetrieveDestroyAPIView,
+)
 from rest_framework.authentication import SessionAuthentication, TokenAuthentication
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
@@ -29,7 +32,7 @@ from GinderApp.api.throttling import SubscriptionRateThrottle
 # Profile views
 class ProfileAPIView(RetrieveUpdateAPIView):
     authentication_classes = [SessionAuthentication, TokenAuthentication]
-    permission_classes = [IsOwnerOrReadOnly, ]
+    permission_classes = [IsAuthenticated]
     # throttle_classes = [SubscriptionRateThrottle,]
     serializer_class = ProfileSerializer
 
@@ -67,7 +70,7 @@ class LikeUserPostAPIView(APIView):
 
 
 # Chat View
-class ChatAPIView(RetrieveAPIView):
+class ChatAPIView(RetrieveDestroyAPIView):
     authentication_classes = [SessionAuthentication, TokenAuthentication]
     permission_classes = [IsChatParticipant, ]
     serializer_class = ChatSerializer
@@ -109,7 +112,7 @@ class SwipesAPIView(APIView):
         post = Post.objects.select_related('user').filter(
             ~Q(user=request_user) &
             Q(user__profile__location__distance_lt=(
-            profile.location, Distance(km=20))) &  # TODO distance based on subscription
+                profile.location, Distance(km=20))) &  # TODO distance based on subscription
             ~Q(user__profile__in=profile.viewed.all())
         ).first()
         if not post:
