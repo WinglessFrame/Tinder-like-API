@@ -1,7 +1,8 @@
 from rest_framework.generics import (
     RetrieveUpdateAPIView,
-    CreateAPIView,
     RetrieveDestroyAPIView,
+    RetrieveUpdateDestroyAPIView,
+    CreateAPIView,
 )
 from rest_framework.authentication import SessionAuthentication, TokenAuthentication
 from rest_framework.views import APIView
@@ -15,6 +16,7 @@ from GinderApp.api.permissions import (
     IsOwnerOrReadOnly,
     IsChatParticipant,
     IsLocationSet,
+    IsPostOwner,
 )
 from GinderApp.api.serializers import (
     ProfileSerializer,
@@ -24,6 +26,7 @@ from GinderApp.api.serializers import (
     ListMatchChatSerializer,
     PostSerializer,
     PostCreateSerializer,
+    PostOwnerSerializer,
 )
 from GinderApp.api.api_utils import is_match, create_match
 from GinderApp.models import Profile, MatchChat, Message, Post
@@ -141,3 +144,15 @@ class CreatePostAPIView(CreateAPIView):
     authentication_classes = [SessionAuthentication, TokenAuthentication]
     permission_classes = [IsAuthenticated]
     serializer_class = PostCreateSerializer
+
+
+# update and delete post view
+class UpdateDeletePostAPIView(RetrieveUpdateDestroyAPIView):
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
+    permission_classes = [IsAuthenticated, IsPostOwner]
+    serializer_class = PostOwnerSerializer
+    lookup_field = 'pk'
+
+    def get_queryset(self):
+        user = self.request.user
+        return user.posts.all()

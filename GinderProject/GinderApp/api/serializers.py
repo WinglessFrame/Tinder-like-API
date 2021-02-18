@@ -28,7 +28,7 @@ class ProfileSerializer(GeoModelSerializer):
         return obj.subscription
 
     def get_posts(self, obj):
-        serializer = PostSerializer(obj.user.posts, many=True, context=self.context)
+        serializer = PostOwnerSerializer(obj.user.posts, many=True, context=self.context)
         return serializer.data
 
     def get_matches(self, obj):
@@ -65,6 +65,23 @@ class PostSerializer(ModelSerializer):
             'image',
             'description',
             'like_url',
+        ]
+
+
+# Post serializer for Owner (in profile)
+class PostOwnerSerializer(ModelSerializer):
+    delete_update_url = SerializerMethodField()
+
+    def get_delete_update_url(self, obj):
+        request = self.context.get('request')
+        return reverse('GinderApp:update_delete_post', args=[obj.pk], request=request)
+
+    class Meta:
+        model = Post
+        fields = [
+            'image',
+            'description',
+            'delete_update_url'
         ]
 
 
