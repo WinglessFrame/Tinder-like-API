@@ -23,6 +23,7 @@ from GinderApp.api.serializers import (
     MessageCreateSerializer,
     ListMatchChatSerializer,
     PostSerializer,
+    PostCreateSerializer,
 )
 from GinderApp.api.api_utils import is_match, create_match
 from GinderApp.models import Profile, MatchChat, Message, Post
@@ -33,11 +34,10 @@ from GinderApp.api.throttling import SubscriptionRateThrottle
 class ProfileAPIView(RetrieveUpdateAPIView):
     authentication_classes = [SessionAuthentication, TokenAuthentication]
     permission_classes = [IsAuthenticated]
-    # throttle_classes = [SubscriptionRateThrottle,]
     serializer_class = ProfileSerializer
 
     def get_queryset(self):
-        return self.request.user.profile
+        return Profile.objects.select_related().get(pk=self.request.user.profile.pk)
 
     # overrides default one to skip lookup_field
     def get_object(self):
@@ -134,3 +134,10 @@ class ClearViewedAPIView(APIView):
         profile = request.user.profile
         profile.viewed.clear()
         return Response(data={'message': 'Viewed users are available in swipes'}, status=201)
+
+
+# Create post view
+class CreatePostAPIView(CreateAPIView):
+    authentication_classes = [SessionAuthentication, TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+    serializer_class = PostCreateSerializer

@@ -1,4 +1,5 @@
-from rest_framework.serializers import ModelSerializer, SerializerMethodField, ImageField
+from rest_framework.serializers import ModelSerializer, SerializerMethodField, ImageField, PrimaryKeyRelatedField
+from rest_framework_gis.serializers import GeoFeatureModelSerializer, GeoModelSerializer
 from rest_framework.reverse import reverse
 from django.db.models import Q
 
@@ -6,32 +7,22 @@ from GinderApp.models import Profile, Post, MatchChat, Message
 
 
 # Profile serializers
-class ProfileSerializer(ModelSerializer):
+class ProfileSerializer(GeoModelSerializer):
     username = SerializerMethodField()
-    lon = SerializerMethodField()
-    lat = SerializerMethodField()
     subscription = SerializerMethodField()
     clear_viewed_url = SerializerMethodField()
+    create_post_url = SerializerMethodField()
     posts = SerializerMethodField()
     matches = SerializerMethodField()
+
+    def get_create_post_url(self, obj):
+        return reverse('GinderApp:create_post', request=self.context.get('request'))
 
     def get_clear_viewed_url(self, obj):
         return reverse('GinderApp:clear', request=self.context.get('request'))
 
     def get_username(self, obj):
         return obj.user.username
-
-    def get_lon(self, obj):
-        if obj.location:
-            return obj.location.x
-        else:
-            return "Not set"
-
-    def get_lat(self, obj):
-        if obj.location:
-            return obj.location.y
-        else:
-            return "Not set"
 
     def get_subscription(self, obj):
         return obj.subscription
@@ -47,13 +38,13 @@ class ProfileSerializer(ModelSerializer):
 
     class Meta:
         model = Profile
+        geo_field = 'location'
         fields = [
             'username',
             'bio',
             'location',
-            'lon',
-            'lat',
             'subscription',
+            'create_post_url',
             'clear_viewed_url',
             'matches',
             'posts'
@@ -75,6 +66,23 @@ class PostSerializer(ModelSerializer):
             'description',
             'like_url',
         ]
+
+
+class PostCreateSerializer(ModelSerializer):
+    user = PrimaryKeyRelatedField(read_only=True)
+
+    def create(self, validated_data):
+        obj = Post.objects.create(user=self.context['request'].user,
+                                  **validated_data)
+        return obj
+
+    class Meta:
+        model = Post
+        fields = (
+            'image',
+            'description',
+            'user',
+        )
 
 
 # Message Serializer

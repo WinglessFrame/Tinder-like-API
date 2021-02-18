@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # Third-party apps
     'rest_framework',
+    'rest_framework_gis',
     'django.contrib.gis',
     'debug_toolbar',
     # My apps
