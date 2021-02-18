@@ -12,7 +12,7 @@ from GinderApp.api.permissions import (
     IsOwnerOrReadOnly,
     IsChatParticipant,
     IsLocationSet,
-    )
+)
 from GinderApp.api.serializers import (
     ProfileSerializer,
     ChatSerializer,
@@ -96,18 +96,6 @@ class SendChatMessageAPIView(CreateAPIView):
             return Response(data={'message': 'chat not found'}, status=404)
 
 
-# Matches views
-class MatchesListAPIView(ListAPIView):
-    authentication_classes = [SessionAuthentication, TokenAuthentication]
-    permission_classes = [IsAuthenticated]
-    serializer_class = ListMatchChatSerializer
-
-    def get_queryset(self):
-        user_profile = self.request.user.profile
-        queryset = MatchChat.objects.filter(Q(user_profile1=user_profile) | Q(user_profile2=user_profile))
-        return queryset
-
-
 # Swipes
 class SwipesAPIView(APIView):
     authentication_classes = [SessionAuthentication, TokenAuthentication]
@@ -120,7 +108,8 @@ class SwipesAPIView(APIView):
         profile = request_user.profile
         post = Post.objects.select_related('user').filter(
             ~Q(user=request_user) &
-            Q(user__profile__location__distance_lt=(profile.location, Distance(km=20))) &  # TODO distance based on subscription
+            Q(user__profile__location__distance_lt=(
+            profile.location, Distance(km=20))) &  # TODO distance based on subscription
             ~Q(user__profile__in=profile.viewed.all())
         ).first()
         if not post:

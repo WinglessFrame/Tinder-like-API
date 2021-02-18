@@ -1,5 +1,6 @@
 from rest_framework.serializers import ModelSerializer, SerializerMethodField, ImageField
 from rest_framework.reverse import reverse
+from django.db.models import Q
 
 from GinderApp.models import Profile, Post, MatchChat, Message
 
@@ -40,11 +41,9 @@ class ProfileSerializer(ModelSerializer):
         return serializer.data
 
     def get_matches(self, obj):
-        request = self.context.get('request')
-        if obj.user.profile == obj:
-            return reverse('GinderApp:matches', request=request)
-        else:
-            return 'Forbidden'
+        queryset = MatchChat.objects.filter(Q(user_profile1=obj) | Q(user_profile2=obj))
+        matches_serializer = ListMatchChatSerializer(queryset, many=True, context=self.context)
+        return matches_serializer.data
 
     class Meta:
         model = Profile
