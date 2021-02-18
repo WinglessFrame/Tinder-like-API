@@ -14,6 +14,16 @@ class ProfileSerializer(GeoModelSerializer):
     create_post_url = SerializerMethodField()
     posts = SerializerMethodField()
     matches = SerializerMethodField()
+    search_distance = SerializerMethodField()
+    change_search_distance_uri = SerializerMethodField()
+
+    def get_change_search_distance_uri(self, obj):
+        if obj.subscription != 'gold':
+            return 'You have to buy Gold plan to change distance'
+        return
+
+    def get_search_distance(self, obj):
+        return obj.search_distance
 
     def get_create_post_url(self, obj):
         return reverse('GinderApp:create_post', request=self.context.get('request'))
@@ -44,6 +54,7 @@ class ProfileSerializer(GeoModelSerializer):
             'bio',
             'location',
             'subscription',
+            'search_distance',
             'create_post_url',
             'clear_viewed_url',
             'matches',
