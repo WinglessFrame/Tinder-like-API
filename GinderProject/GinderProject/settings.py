@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'rest_framework_gis',
     'django.contrib.gis',
     'debug_toolbar',
+    'drf_spectacular',
     # My apps
     'GinderApp',
     'accounts',
@@ -131,7 +132,8 @@ REST_FRAMEWORK = {
     'DEFAULT_THROTTLE_RATES': {
         'user': '5/second',
         'subscription': '200/day'
-    }
+    },
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
 # Internationalization
