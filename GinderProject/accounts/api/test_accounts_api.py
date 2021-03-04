@@ -6,6 +6,7 @@ from rest_framework.test import APITestCase
 
 import GinderProject.settings as settings
 
+
 class UserAPITestCase(APITestCase):
     """
     Tests of accounts app
