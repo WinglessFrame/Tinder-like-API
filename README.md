@@ -10,6 +10,8 @@
 ### Things to do
 - [ ] Refactor code (Business Logic -> utils.py)
 - [ ] Cover with test
+  - [x] Cover accounts app with tests
+  - [ ] Cover GinderApp app with tesst
 ### All api endpoints you can look in [schema.yml](schema.yml) file (copypaste file in this editor [swagger.io](https://editor.swagger.io/))
 
 ### What is it about:
