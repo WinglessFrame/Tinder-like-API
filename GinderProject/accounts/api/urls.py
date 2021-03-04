@@ -1,7 +1,7 @@
 from django.urls import path
 from rest_framework_simplejwt.views import TokenRefreshView
 
-from .view import CustomTokenObtainPairView, RegisterAPIView
+from .views import CustomTokenObtainPairView, RegisterAPIView
 
 app_name = 'accounts'
 

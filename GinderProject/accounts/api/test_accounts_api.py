@@ -1,10 +1,9 @@
+import GinderProject.settings as settings
 import jwt
 from django.contrib.auth.models import User
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
-
-import GinderProject.settings as settings
 
 
 class UserAPITestCase(APITestCase):
@@ -58,3 +57,32 @@ class UserAPITestCase(APITestCase):
         # checks that token is own by requested user
         self.assertEqual(User.objects.get(pk=user_id).username,
                          response.data.get('user'))
+
+    def test_refresh_token(self):
+        get_token_url = reverse('accounts:login')
+        update_url = reverse('accounts:token_refresh')
+        data = {
+            'username': 'TestUser',
+            'password': 'TestUserPassword',
+        }
+        response_on_get = self.client.post(get_token_url, data, format='json')
+        refresh_get_on_login = response_on_get.data.get('refresh', False)
+        token_get_on_login = response_on_get.data.get('token', False)
+        data = {
+            'refresh': refresh_get_on_login
+        }
+        response_on_refresh = self.client.post(update_url, data, format='json')
+        # checks if status code is OK
+        self.assertEqual(response_on_refresh.status_code, status.HTTP_200_OK)
+        print(response_on_refresh.data)
+        access = response_on_refresh.data.get('access', '')
+        # checks token existence
+        self.assertGreater(len(access), 0)
+        decoded_on_login = jwt.decode(token_get_on_login, key=settings.SECRET_KEY,
+                                      algorithms=settings.SIMPLE_JWT['ALGORITHM'])
+        user_id_on_login = decoded_on_login['user_id']
+        decoded_on_refresh = jwt.decode(access, key=settings.SECRET_KEY,
+                                        algorithms=settings.SIMPLE_JWT['ALGORITHM'])
+        user_id_on_refresh = decoded_on_login['user_id']
+        # checks if user gets its own token on refresh
+        self.assertEqual(user_id_on_login, user_id_on_refresh)
