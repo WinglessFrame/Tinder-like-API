@@ -25,7 +25,7 @@ class UserPublicDisplaySerializer(serializers.ModelSerializer):
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
         data = super(CustomTokenObtainPairSerializer, self).validate(attrs)
-        # data['token'] = data.pop('access')
+        data['token'] = data.pop('access')
         data.update({'user': self.user.username})
         data.update({'id': self.user.id})
         data.update({'first_name': self.user.first_name})

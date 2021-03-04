@@ -1,8 +1,10 @@
+import jwt
 from django.contrib.auth.models import User
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
+import GinderProject.settings as settings
 
 class UserAPITestCase(APITestCase):
     """
@@ -47,3 +49,11 @@ class UserAPITestCase(APITestCase):
         response = self.client.post(url, data, format='json')
         # checks if response is OK
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        token = response.data.get('token', False)
+        # checks if token send back
+        self.assertGreater(len(token), 0)
+        decoded = jwt.decode(token, key=settings.SECRET_KEY, algorithms=settings.SIMPLE_JWT['ALGORITHM'])
+        user_id = decoded['user_id']
+        # checks that token is own by requested user
+        self.assertEqual(User.objects.get(pk=user_id).username,
+                         response.data.get('user'))
