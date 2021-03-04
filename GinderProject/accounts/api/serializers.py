@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
-from .utils import get_tokens_for_user
+from accounts.api.utils import get_tokens_for_user
 
 User = get_user_model()
 
@@ -25,6 +25,7 @@ class UserPublicDisplaySerializer(serializers.ModelSerializer):
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
         data = super(CustomTokenObtainPairSerializer, self).validate(attrs)
+        data['token'] = data.pop('access')
         data.update({'user': self.user.username})
         data.update({'id': self.user.id})
         data.update({'first_name': self.user.first_name})
@@ -72,7 +73,7 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         return "Thank you for registering. Please verify your email before continuing"
 
     def get_token(self, instance):   # instance of the User
-        token = get_tokens_for_user(instance).get("access")
+        token = get_tokens_for_user(instance).get("token")
         return token
 
     def create(self, validated_data):
