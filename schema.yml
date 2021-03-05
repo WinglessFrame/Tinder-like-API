@@ -147,89 +147,6 @@ paths:
                 type: object
                 additionalProperties: {}
           description: ''
-  /app/api/accounts/register/:
-    post:
-      operationId: app_api_accounts_register_create
-      description: ''
-      tags:
-      - app
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UserRegister'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/UserRegister'
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/UserRegister'
-        required: true
-      security:
-      - basicAuth: []
-      - cookieAuth: []
-      - jwtAuth: []
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UserRegister'
-          description: ''
-  /app/api/accounts/token/:
-    post:
-      operationId: app_api_accounts_token_create
-      description: |-
-        Takes a set of user credentials and returns an access and refresh JSON web
-        token pair to prove the authentication of those credentials.
-      tags:
-      - app
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CustomTokenObtainPair'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/CustomTokenObtainPair'
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/CustomTokenObtainPair'
-        required: true
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CustomTokenObtainPair'
-          description: ''
-  /app/api/accounts/token/refresh/:
-    post:
-      operationId: app_api_accounts_token_refresh_create
-      description: |-
-        Takes a refresh type JSON web token and returns an access type JSON web
-        token if the refresh token is valid.
-      tags:
-      - app
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/TokenRefresh'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/TokenRefresh'
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/TokenRefresh'
-        required: true
-      responses:
-        '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/TokenRefresh'
-          description: ''
   /app/api/chat/{id}:
     get:
       operationId: app_api_chat_retrieve
@@ -602,6 +519,89 @@ paths:
       responses:
         '200':
           description: No response body
+  /jwt/register/:
+    post:
+      operationId: jwt_register_create
+      description: ''
+      tags:
+      - jwt
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRegister'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserRegister'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserRegister'
+        required: true
+      security:
+      - basicAuth: []
+      - cookieAuth: []
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserRegister'
+          description: ''
+  /jwt/token/:
+    post:
+      operationId: jwt_token_create
+      description: |-
+        Takes a set of user credentials and returns an access and refresh JSON web
+        token pair to prove the authentication of those credentials.
+      tags:
+      - jwt
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomTokenObtainPair'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CustomTokenObtainPair'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CustomTokenObtainPair'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomTokenObtainPair'
+          description: ''
+  /jwt/token/refresh/:
+    post:
+      operationId: jwt_token_refresh_create
+      description: |-
+        Takes a refresh type JSON web token and returns an access type JSON web
+        token if the refresh token is valid.
+      tags:
+      - jwt
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenRefresh'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenRefresh'
+          description: ''
 components:
   schemas:
     Chat:
@@ -866,7 +866,7 @@ components:
     jwtAuth:
       type: http
       scheme: bearer
-      bearerFormat: Bearer
+      bearerFormat: JWT
     tokenAuth:
       type: apiKey
       in: header
