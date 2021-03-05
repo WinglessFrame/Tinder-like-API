@@ -17,7 +17,7 @@ class CustomTokenObtainPairView(TokenObtainPairView):
 class RegisterAPIView(generics.CreateAPIView):
     queryset = User
     serializer_class = UserRegisterSerializer
-    permission_classes = [AnonPermissionsOnly, ]
+    permission_classes = (AnonPermissionsOnly, )
 
     def get_serializer_context(self, *args, **kwargs):
         return {'request': self.request}

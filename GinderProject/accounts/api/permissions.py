@@ -1,12 +1,16 @@
 from rest_framework import permissions
+from rest_framework.exceptions import PermissionDenied
 
 
 class AnonPermissionsOnly(permissions.BasePermission):
     """
     Non-auth user only
     """
+
     def has_permission(self, request, view):
-        return not request.user.is_authenticated
+        if request.user.is_authenticated:
+            raise PermissionDenied(detail='You have to log out before registration', code=403)
+        return True
 
 
 class IsOwnerOrReadOnly(permissions.BasePermission):
