@@ -1,5 +1,5 @@
 # Tinder-like API (DRF+JWT+PostGIS)
-### Technology stack:
+### 🏭 Technology stack:
 * [Django](https://github.com/django/django)
 * [Django Rest Framework](https://github.com/encode/django-rest-framework)
 * [SimpleJWT](https://github.com/SimpleJWT/django-rest-framework-simplejwt)
@@ -7,15 +7,15 @@
 * [PostgreSQL](https://www.postgresql.org/) [(PostGIS extension)](https://postgis.net/)
 * [django-rest-framework-gis](https://github.com/openwisp/django-rest-framework-gis)
 * [drf-spectacuar](https://github.com/tfranzel/drf-spectacular)
-### Things to do
+### ✅ Things to do
 - [x] Docker
 - [ ] Refactor code (Business Logic -> utils.py
 - [ ] Cover with test
   - [x] Cover accounts app with tests
   - [ ] Cover GinderApp app with tesst
-### All api endpoints you can look in [schema.yml](schema.yml) file (copypaste file in this editor [swagger.io](https://editor.swagger.io/))
-
-### What is it about:
+### 🧪 All api endpoints you can look in [schema.yml](schema.yml) file (copypaste file in this editor [swagger.io](https://editor.swagger.io/))
+### 📝 Tests could be run in docker CLI for a web container
+### 📚 What is it about:
 * User is able to create account
 * User has subscription and location
 * User can add posts to the account
