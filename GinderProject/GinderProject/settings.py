@@ -91,10 +91,10 @@ WSGI_APPLICATION = 'GinderProject.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': os.environ.get("DB_NAME", "ginderdb"),
+        'NAME': os.environ.get("DB_NAME", "postgres"),
         'USER': os.environ.get("DB_USER", "postgres"),
         'PASSWORD': os.environ.get("DB_PASSWORD", "postgres"),
-        'HOST': 'localhost',
+        'HOST': 'db',
         'PORT': '5432',
     }
 }
