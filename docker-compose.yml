@@ -16,7 +16,7 @@ services:
 
 #    volumes:
 #      - .
-    command: bash -c "cd GinderProject && python manage.py migrate && python manage.py runserver 0.0.0.0:8000" #"cd GinderProject && python manage.py migrate && python manage.py runserver"
+    command: bash -c "cd GinderProject && python manage.py makemigrations && python manage.py migrate  && python manage.py runserver 0.0.0.0:8000" #"cd GinderProject && python manage.py migrate && python manage.py runserver"
 
   db:
     image: postgis/postgis:latest
