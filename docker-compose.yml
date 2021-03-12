@@ -1,0 +1,35 @@
+version: '3.1'
+
+services:
+  web:
+    build: .
+    restart: on-failure
+    env_file:
+      - .env
+    user: root
+    expose:
+      - 8000
+    ports:
+      - 8000:8000
+    depends_on:
+      - db
+
+#    volumes:
+#      - .
+    command: bash -c "cd GinderProject && python manage.py migrate && python manage.py runserver 0.0.0.0:8000" #"cd GinderProject && python manage.py migrate && python manage.py runserver"
+
+  db:
+    image: postgis/postgis:latest
+    restart: on-failure
+    volumes:
+      - /usr/local/var/postgres:/var/lib/postgres/data/pgdata
+    env_file:
+      - .env
+    user: root
+    environment:
+      POSTGRES_HOST_AUTH_METHOD: trust
+      POSTGRES_PORT: 5432
+    ports:
+      - 5432:5432
+    expose:
+      - 5432

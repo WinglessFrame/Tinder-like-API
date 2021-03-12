@@ -1,10 +1,8 @@
+from accounts.api.permissions import AnonPermissionsOnly
+from accounts.api.serializers import CustomTokenObtainPairSerializer, UserRegisterSerializer
 from django.contrib.auth import get_user_model
 from rest_framework import generics
 from rest_framework_simplejwt.views import TokenObtainPairView
-
-from accounts.api.permissions import AnonPermissionsOnly
-from accounts.api.serializers import CustomTokenObtainPairSerializer, UserRegisterSerializer
-
 
 User = get_user_model()
 

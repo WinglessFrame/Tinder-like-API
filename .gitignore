@@ -1,4 +1,6 @@
 # Byte-compiled / optimized / DLL files
+# binaries of GDAL
+GDAL-3.2.1-cp38-cp38-win_amd64.whl
 __pycache__/
 *.py[cod]
 *$py.class
@@ -7,7 +9,7 @@ media/
 # STATIC ROOT
 static/
 # .env file
-*.env
+# *.env
 # C extensions
 *.so
 # idea

@@ -8,8 +8,8 @@
 * [django-rest-framework-gis](https://github.com/openwisp/django-rest-framework-gis)
 * [drf-spectacuar](https://github.com/tfranzel/drf-spectacular)
 ### Things to do
-- [ ] Docker
-- [ ] Refactor code (Business Logic -> utils.py)
+- [x] Docker
+- [ ] Refactor code (Business Logic -> utils.py
 - [ ] Cover with test
   - [x] Cover accounts app with tests
   - [ ] Cover GinderApp app with tesst
